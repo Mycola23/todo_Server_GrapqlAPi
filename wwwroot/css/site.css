@@ -1,0 +1,347 @@
+/*Обнуленння*/
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+nav,
+footer,
+header,
+aside {
+    display: block;
+}
+
+html,
+:has(:target) {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    line-height: 1.5;
+    font-size: 14px;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+    font-family: inherit;
+}
+
+input {
+    outline: none;
+}
+
+    input::-ms-clear {
+        display: none;
+    }
+
+button {
+    cursor: pointer;
+}
+
+    button::-moz-focus-inner {
+        padding: 0;
+        border: 0;
+    }
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: none;
+    }
+
+ul li,
+ol li {
+    list-style: none;
+}
+
+img {
+    vertical-align: top;
+}
+
+img,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: 400;
+}
+
+:where(blockquote, figure):where([class]) {
+    margin: 0;
+}
+
+:where(dd[class]) {
+    margin-left: 0;
+}
+
+:where(fieldset[class]) {
+    margin-left: 0;
+    padding: 0;
+    border: none;
+}
+
+:where(address[class]) {
+    font-style: normal;
+}
+
+button,
+label {
+    cursor: pointer;
+}
+
+svg * {
+    transition-property: fill, stroke;
+}
+
+/* del all animatiaon if people don`t use it*/
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+/*----------------*/
+:root {
+    --absolute-white: #fff;
+    --absolute-black: #000;
+    --accent-color: #ffd500;
+    --dark-grey: #333333;
+    --light-grey: #cccccc;
+}
+
+body {
+    font-family: "Manrope";
+    font-size: calc(16px + 2 * calc(100vw - (320px)) / 1080);
+    background-color: #0f0f0f;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+[class*=__container] {
+    padding-left: calc(15px + 65 * calc(100vw - (320px)) / 1080);
+    padding-right: calc(15px + 65 * calc(100vw - (320px)) / 1080);
+}
+
+.main__title {
+    font-family: "Comic Relief";
+    font-size: 45px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #ffcf15;
+    text-shadow: 0 0 10px #333333;
+}
+
+.main__container {
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 45px;
+}
+.form__info {
+    align-self: flex-end;
+    margin-bottom: 15px;
+}
+
+.form__date {
+    min-height: 100%;
+    margin-right: 15px;
+}
+
+.form__date::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(89%) sepia(84%) saturate(749%) hue-rotate(1deg) brightness(103%) contrast(75%);
+}
+
+.form__date, .form__dropdown {
+    background: #111;
+    border: 3px solid #333;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent-color);
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form__input {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 24px;
+    font-weight: 500;
+    color: #767676;
+    outline: none;
+    border: 10px solid var(--dark-grey);
+    background-color: #141414;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.form__input:focus {
+    border-color: rgba(207, 207, 207, 0.2156862745);
+    box-shadow: 0 0 10px rgba(189, 189, 189, 0.2156862745);
+}
+
+.form__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    transform: translate(0, -10px);
+    height: 60px;
+    width: 100%;
+    background: var(--dark-grey);
+    color: var(--accent-color);
+    background-color: #ffcf15;
+    color: #1a1a1a;
+    font-size: 45px;
+    padding: 8px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 0 30px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.form__btn:hover {
+    background: #e9a907;
+    box-shadow: 0 0 10px 2px rgba(255, 166, 0, 0.907);
+}
+
+.list {
+    padding: 20px;
+    border: 2px solid #3a3a3a;
+    border-radius: 12px;
+}
+
+.item-list {
+    position: relative;
+    border-radius: 2px;
+    padding: 5px 5px;
+    border-bottom: 2px solid #3a3a3a;
+    margin-bottom: 15px;
+    min-height: 100px;
+    display: flex;
+    min-width:50vw;
+}
+
+.item-list.completed {
+    text-decoration: line-through;
+    text-decoration-style: double;
+    text-decoration-color: #ffc422;
+}
+
+.item-list__body {
+    flex: 1 1 auto;
+}
+
+.item-list__controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    flex: 0 0 25px;
+}
+
+.item-list__text {
+    white-space: pre-line; /*зберігає перенос рядка, але текст обтікає межі контейнера */
+    /*word-break: break-word;*/
+    color: #f5f5f5;
+    font-weight: 18px;
+}
+
+.item-list__btn-del {
+    top: 0;
+    right: 0;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+}
+
+.item-list__btn-del::after, .item-list__btn-del::before {
+    position: absolute;
+    content: "";
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #e93007;
+}
+
+.item-list__btn-del::after {
+    transform: rotate(-45deg);
+}
+
+.item-list__btn-del::before {
+    transform: rotate(45deg);
+}
+
+.item-list__btn-ed {
+    top: 35px;
+    right: -1px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+}
+
+.item-list__btn-complete {
+    accent-color: #ffcf15;
+    width: 20px;
+    height: 20px;
+    bottom: 15px;
+    right: 3px;
+}

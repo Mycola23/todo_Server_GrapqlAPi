@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "ToDo ";
+}
+@model ToDoProject.Models.TasksWrapper;
+
+<div class="wrapper">
+    <div class="main__container">
+        <h1 class="main__title">Make toDO</h1>
+        <form asp-action="Create" method="post" class="form">
+            <div class="form__info">
+                <input asp-for="Task.PlannedTime" type="datetime-local" class="form__date" name="PlannedTime" />
+                <select name="select" class="form__dropdown dropdown" asp-for="Task.CategoryId">
+                    <option value="1">Category 1</option>
+                    <option value="2" selected>Category 2</option>
+                    <option value="3">Category 3</option>
+                </select>
+            </div>
+            <textarea asp-for="Task.Text" class="form__input"></textarea>
+            <button type="submit" class="form__btn">+</button>
+        </form>
+        <h2 class="main__title">Tasks</h2>
+        <div class="list">
+
+            @foreach(var task in Model.TaskVm.Tasks)
+            {
+                <div class="list__item item-list ">
+                    <div class="item-list__body">
+                        <p class="item-list__text">
+                            @task.Text
+                        </p>
+                    </div>
+                    <div class="item-list__controls">
+                        <a class="item-list__btn-del" 
+                                asp-action="Delete" asp-route-id="@task.Id"></a>
+                        <button class="item-list__btn-ed">
+                            <img src="~/img/icons/edit-3-svgrepo-com.svg" alt="Edit" />
+                        </button>
+                        <input type="checkbox" class="item-list__btn-complete" />
+                    </div>
+                </div>
+			}
+        </div>
+    </div>
+</div>
