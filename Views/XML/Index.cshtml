@@ -7,30 +7,29 @@
     <div class="main__container">
         <h1 class="main__title">Make toDO</h1>
         <div class="droppy">
-
             <ul class="links__dropdown">
                 <li>
+
                     <a asp-controller="Home"
-                       asp-action="SelectStorageAndRedirect" asp-route-storage="MSSQL">MSSQL</a>
+                       asp-action="SelectStorageAndRedirect" asp-route-storage="XML">XML</a>
                     <ul>
                         <li>
-                           
                             <a asp-controller="Home"
-                               asp-action="SelectStorageAndRedirect" asp-route-storage="XML">XML</a>
+                               asp-action="SelectStorageAndRedirect" asp-route-storage="MSSQL">MSSQL</a>
                         </li>
                     </ul>
                 </li>
             </ul>
         </div>
         
-        <form asp-action="Create" method="post" class="form">
+        <form asp-action="Create" method="post" class="form" asp-controller="Home">
             <div class="form__info">
                 <input asp-for="Task.PlannedTime" type="datetime-local" class="form__date"  />
-                <select  class="form__dropdown dropdown" asp-for="Task.CategoryId">
+                <select  class="form__dropdown dropdown" asp-for="Task.CategoryType">
                     <option value="">without category </option>
-                    @foreach(var option in Model.TaskVm.Categories)
+                     @foreach(var option in Model.TaskVm.Categories)
                     {
-                        <option value="@option.Id">@option.Type</option>
+                        <option value="@option.Type">@option.Type</option>
                     }
                 </select>
             </div>
@@ -58,17 +57,17 @@
                             </div>
                         </div>
                         <div class="item-list__controls">
-                            <form class="form__sm" asp-action="Delete" method="post" asp-route-id="@task.Id">
+                            <form class="form__sm" asp-controller="Home" asp-action="Delete" method="post" asp-route-id="@task.Id">
                                 <button type="submit" class="item-list__btn-del">
                                 </button>
                             </form>
-                            <form class="form__sm" asp-action="MarkComplete" method="post" asp-route-id="@task.Id">
+                            <form class="form__sm" asp-controller="Home" asp-action="MarkComplete" method="post" asp-route-id="@task.Id">
                                 <input name="IsCompleted" data-id="@task.Id" type="checkbox" class="item-list__btn-complete" value="true" onchange="this.form.submit()" />
                             </form>
                         </div>
                     </div>
                 }
-
+               
             }
         </div>
         <h2 class="main__title">Completed</h2>
@@ -90,11 +89,11 @@
                             </div>
                         </div>
                         <div class="item-list__controls">
-                             <form class="form__sm" asp-action="Delete" method="post"  asp-route-id="@task.Id">
+                            <form class="form__sm" asp-controller="Home" asp-action="Delete" method="post" asp-route-id="@task.Id">
                                 <button type="submit" class="item-list__btn-del">
                                 </button>
-                             </form>
-                            <form class="form__sm" asp-action="MarkComplete" method="post"  asp-route-id="@task.Id">
+                            </form>
+                            <form class="form__sm" asp-controller="Home" asp-action="MarkComplete" method="post" asp-route-id="@task.Id">
                                 <input name="IsCompleted" data-id="@task.Id" type="checkbox" value="false" checked class="item-list__btn-complete" onchange="this.form.submit()" />
                             </form>
                         </div>
@@ -104,8 +103,8 @@
         </div>
     </div>
 </div>
- @section Scripts {
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-} 
+}

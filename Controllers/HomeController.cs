@@ -6,64 +6,69 @@ using WebApplication1.Models;
 using ToDoProject.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
+using ToDoProject;
+using ToDoProject.Graphql;
+using System.ComponentModel;
+using ToDoProject.Storages;
+using Microsoft.Identity.Client.Extensions.Msal;
 namespace WebApplication1.Controllers;
-
+// переробити замість того щоб надсилати тип сховища  а як параметра надсилати його в headers
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
 
-    private string connectionString  = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TODO;Integrated Security=True;Encrypt=True";
-    public HomeController(ILogger<HomeController> logger)
+    //private string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TODO;Integrated Security=True;Encrypt=True";
+    private readonly GraphqlService _graphqlService;
+    public HomeController(ILogger<HomeController> logger, GraphqlService graphQLService)
     {
         _logger = logger;
+        _graphqlService = graphQLService;
     }
 
    
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var tasks = new List<TaskModel>();
-        var categories = new List<Category>();
+        var tasksWrapper = new TasksWrapper();
 
-
-
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        try
         {
-            conn.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT * FROM Tasks", conn))
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
+            var data = await _graphqlService.GetTasksAndCategories();
+            var updatedTasks = data.Tasks.Select(t => new TaskModel
                 {
-                    tasks.Add(new TaskModel
-                    {
-                        Id = (int)reader["Id"],
-                        Text = reader["Text"].ToString(),
-                        IsCompleted = (bool)reader["IsCompleted"],
-                        CompletedAt = reader.IsDBNull(reader.GetOrdinal("CompletedAt"))
-                          ? (DateTime?)null
-                          : reader.GetDateTime(reader.GetOrdinal("CompletedAt")),
-                        CategoryId = reader.IsDBNull(reader.GetOrdinal("CategoryId"))
-                          ? (int?)null
-                          : reader.GetInt32(reader.GetOrdinal("CategoryId")),
-                          PlannedTime = reader.IsDBNull(reader.GetOrdinal("PlannedTime"))
-                          ? (DateTime?)null
-                          : reader.GetDateTime(reader.GetOrdinal("PlannedTime"))
-                    });
-                }
-            }
-            using (SqlCommand cmdSecond = new SqlCommand("SELECT * FROM Categories", conn))
-            using (SqlDataReader readerSecond = cmdSecond.ExecuteReader())
+                Id = t.Id,
+                Text = t.Text,
+                IsCompleted = t.IsCompleted,
+                CompletedAt = t.CompletedAt,
+                PlannedTime = t.PlannedTime,
+                CategoryId = t.CategoryId,
+                CategoryType = data.Categories
+                                .FirstOrDefault(c => c.Id == t.CategoryId)
+                                ?.Type
+                                ?? ""
+                })
+            .ToList();
+            data.Tasks = updatedTasks; 
+            tasksWrapper = new TasksWrapper
             {
-                while (readerSecond.Read())
-                {
-                    categories.Add(new Category
-                    {
-                        Id = (int)readerSecond["Id"],
-                        Type = readerSecond["Text"].ToString()
-                    });
-                }
-            }
+                TaskVm = data,
+                Task = new TaskModel()
+            };
+
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error: {ex.Message}");
+        }
+        //var handler = new RequestHandler();
+        //var tasksWrapperr = handler.GenerateView(DataStorages.MySQL);
+        return View(tasksWrapper);  
+    }
+
+    public IActionResult XMLView()
+    {
+        var storage = new XMLStorage();
+        var tasks = storage.GetTasks();
+        var categories = storage.GetCategories();
         var viewModel = new TaskViewModel
         {
             Tasks = tasks,
@@ -72,66 +77,131 @@ public class HomeController : Controller
         var tasksWrapper = new TasksWrapper
         {
             TaskVm = viewModel,
-            Task =  new TaskModel()
+            Task = new TaskModel()
         };
-
-        return View(tasksWrapper);
+        return View("~/Views/XML/Index.cshtml",tasksWrapper);
     }
-   
-    [HttpPost]
-    public ActionResult Create(TasksWrapper container)
+
+
+    public IActionResult SelectStorageAndRedirect(string storage)
     {
-        try
+        if (storage == "MSSQL")
         {
-            if (!container.Task.Text.IsNullOrEmpty())
+            Response.Cookies.Append("storage", "MSSQL", new CookieOptions
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+
+            return RedirectToAction("Index");
+        }
+        else if (storage == "XML")
+        {
+            Response.Cookies.Append("storage", "XML", new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+
+            return RedirectToAction("XMLView");
+        }
+
+      
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(TasksWrapper container)
+    {
+        //var handler = new RequestHandler();
+        string storage = Request.Cookies["storage"];
+        if(storage == "XML")
+        {
+            var storageHandler = new XMLStorage();
+            if (!ModelState.IsValid)
+            {
+               
+                var tasks = storageHandler.GetTasks();
+                var categories = storageHandler.GetCategories();
+                var data = new TaskViewModel
                 {
-                    string query = "INSERT INTO Tasks (Text, CategoryId, PlannedTime) VALUES (@Text, @CategoryId, @PlannedTime)";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@Text", container.Task.Text);
-                    cmd.Parameters.AddWithValue("@CategoryId", container.Task.CategoryId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PlannedTime", container.Task.PlannedTime ?? (object)DBNull.Value);
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-                Debug.WriteLine($" success");
+                    Tasks = tasks,
+                    Categories = categories
+                };
+
+                var modelWithData = new TasksWrapper
+                {
+                    Task = container.Task,
+                    TaskVm = data
+                };
+               
+                return View("XMLView", modelWithData);
             }
-            Debug.WriteLine($" problems");
+
+            var newTask = storageHandler.CreateTask(container.Task);
+            return RedirectToAction("XMLView");
         }
-        catch(Exception ex)
+        if (!ModelState.IsValid)
         {
-            Debug.WriteLine($"Error: {ex.Message}");
+            var data = await _graphqlService.GetTasksAndCategories();
+            var modelWithData = new TasksWrapper();
+            modelWithData.Task = container.Task;
+            modelWithData.TaskVm = data;
+            return View("Index", modelWithData);
         }
 
-       
+        //handler.CreateTask(container, DataStorages.MySQL);
+        var createdTask  = await _graphqlService.CreateTask(container.Task, "MSSQL");
         return RedirectToAction("Index");
     }
-
     
-    public ActionResult Delete(int Id)
+
+    //https://teams.live.com/l/message/19:meeting_YmQzZTc1NmItYjYzZi00OTI0LThiOWUtM2QxZmQzMDk5M2M2@thread.v2/1747405242480?context=%7B%22contextType%22%3A%22chat%22%7D
+    //https://learn.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2022
+    //https://learn.microsoft.com/en-us/dotnet/standard/data/xml/
+    //https://learn.microsoft.com/en-us/dotnet/standard/linq/linq-xml-overview
+    [HttpPost]
+    public async Task<IActionResult> Delete(int Id)
     {
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        string storage = Request.Cookies["storage"];
+        if (storage == "XML")
         {
-            string query = "DELETE FROM Tasks WHERE Id = @Id";
-            SqlCommand cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", Id);
-            conn.Open();
-            cmd.ExecuteNonQuery();
+            var storageHandler = new XMLStorage();
+            var deleted = storageHandler.DeleteTask(Id);
+            return RedirectToAction("XMLView");
         }
+
+            //var handler = new RequestHandler();
+            //handler.DeleteTask(Id, DataStorages.MySQL);
+        var status = await _graphqlService.DeleteTask(Id, "MSSQL");
         return RedirectToAction("Index");
     }
 
-    public ActionResult Update(int Id) 
+    //public ActionResult Update(int Id,string Text) 
+    //{
+    //    if (string.IsNullOrWhiteSpace(Text))
+    //    {
+    //       // Debug.WriteLine("Text must be");
+    //        return RedirectToAction("Index");
+    //    }
+
+    //    var handler = new RequestHandler();
+    //    handler.UpdateTask(Id,Text);
+    //    return RedirectToAction("Index");
+    //}
+    [HttpPost]
+    public async Task<IActionResult> MarkComplete(int Id, bool IsCompleted)
     {
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        //var handler  = new RequestHandler();
+        //handler.MarkTask(Id,IsCompleted, DataStorages.MySQL);
+        string storage = Request.Cookies["storage"];
+        if (storage == "XML")
         {
-            string query = "Update Tasks SET  WHERE Id = @Id";
-            SqlCommand cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", Id);
-            conn.Open();
-            cmd.ExecuteNonQuery();
+            var storageHandler = new XMLStorage();
+            var markeed = storageHandler.MarkTask(Id,IsCompleted);
+            return RedirectToAction("XMLView");
         }
+
+
+        var status = await _graphqlService.MarkTask(Id,IsCompleted, "MSSQL");
         return RedirectToAction("Index");
     }
 
@@ -142,3 +212,4 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
+// add more validation on this side , try catch, move methods to classes, not to hard code connection string,  fix  all where it needed, validation attributes, del all js and rewrite all code ...  ,single ... many task in one time work on it

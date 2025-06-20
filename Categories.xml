@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<categories>
+	<category>
+		<id>1</id>
+		<type>Now</type>
+	</category>
+	<category>
+		<id>2</id>
+		<type>Travels</type>
+	</category>
+	<category>
+		<id>3</id>
+		<type>Work</type>
+	</category>
+	<category>
+		<id>4</id>
+		<type>Finance</type>
+	</category>
+	<category>
+		<id>5</id>
+		<type>Plan</type>
+	</category>
+	<category>
+		<id>6</id>
+		<type>Shopping</type>
+	</category>
+	<category>
+		<id>7</id>
+		<type>Delegate</type>
+	</category>
+	<category>
+		<id>8</id>
+		<type>Drop</type>
+	</category>
+</categories>

@@ -1,3 +1,32 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: "Gilroy";
+    src: local("Gilroy Medium"), local("Gilroy-Medium"), url("/fonts/Gilroy-Medium.woff2") format("woff2"), url("/fonts/Gilroy-Medium.woff") format("woff"), url("/fonts/Gilroy-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gilroy";
+    src: local("Gilroy Regular"), local("Gilroy-Regular"), url("/fonts/Gilroy-Regular.woff2") format("woff2"), url("/fonts/Gilroy-Regular.woff") format("woff"), url("/fonts/Gilroy-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gilroy";
+    src: local("Gilroy Semibold"), local("Gilroy-Semibold"), url("/fonts/Gilroy-Semibold.woff2") format("woff2"), url("/fonts/Gilroy-Semibold.woff") format("woff"), url("/fonts/Gilroy-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gilroy";
+    src: local("Gilroy Bold"), local("Gilroy-bold"), url("/fonts/Gilroy-bold.woff2") format("woff2"), url("/fonts/Gilroy-bold.woff") format("woff"), url("/fonts/Gilroy-bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
 /*Обнуленння*/
 * {
     margin: 0;
@@ -160,6 +189,7 @@ body {
 }
 
 .main__title {
+    margin-top:45px;
     font-family: "Comic Relief";
     font-size: 45px;
     font-weight: 900;
@@ -183,6 +213,7 @@ body {
     align-items: center;
     margin-bottom: 45px;
 }
+
 .form__info {
     align-self: flex-end;
     margin-bottom: 15px;
@@ -193,10 +224,10 @@ body {
     margin-right: 15px;
 }
 
-.form__date::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    filter: brightness(0) saturate(100%) invert(89%) sepia(84%) saturate(749%) hue-rotate(1deg) brightness(103%) contrast(75%);
-}
+    .form__date::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: brightness(0) saturate(100%) invert(89%) sepia(84%) saturate(749%) hue-rotate(1deg) brightness(103%) contrast(75%);
+    }
 
 .form__date, .form__dropdown {
     background: #111;
@@ -229,10 +260,10 @@ body {
     z-index: 2;
 }
 
-.form__input:focus {
-    border-color: rgba(207, 207, 207, 0.2156862745);
-    box-shadow: 0 0 10px rgba(189, 189, 189, 0.2156862745);
-}
+    .form__input:focus {
+        border-color: rgba(207, 207, 207, 0.2156862745);
+        box-shadow: 0 0 10px rgba(189, 189, 189, 0.2156862745);
+    }
 
 .form__btn {
     display: flex;
@@ -266,9 +297,14 @@ body {
     padding: 20px;
     border: 2px solid #3a3a3a;
     border-radius: 12px;
+    margin-bottom: 30px;
 }
 
+
 .item-list {
+    min-width: 50vw;
+    max-width: 85vw;
+    text-wrap: wrap;
     position: relative;
     border-radius: 2px;
     padding: 5px 5px;
@@ -276,17 +312,17 @@ body {
     margin-bottom: 15px;
     min-height: 100px;
     display: flex;
-    min-width:50vw;
 }
 
-.item-list.completed {
+.item-list.completed .item-list__text {
     text-decoration: line-through;
     text-decoration-style: double;
     text-decoration-color: #ffc422;
 }
 
 .item-list__body {
-    flex: 1 1 auto;
+    overflow:auto;
+    flex: 1 1 90%;
 }
 
 .item-list__controls {
@@ -298,11 +334,19 @@ body {
 }
 
 .item-list__text {
-    white-space: pre-line; /*зберігає перенос рядка, але текст обтікає межі контейнера */
-    /*word-break: break-word;*/
     color: #f5f5f5;
-    font-weight: 18px;
+    font-size: 18px;
+    margin-bottom: 15px;
+    white-space: pre-line;
 }
+
+.item-list__additional {
+    color: var(--accent-color);
+}
+
+    .item-list__additional span:first-child {
+        margin-right: 15px;
+    }
 
 .item-list__btn-del {
     top: 0;
@@ -313,22 +357,22 @@ body {
     background: transparent;
 }
 
-.item-list__btn-del::after, .item-list__btn-del::before {
-    position: absolute;
-    content: "";
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: #e93007;
-}
+    .item-list__btn-del::after, .item-list__btn-del::before {
+        position: absolute;
+        content: "";
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #e93007;
+    }
 
-.item-list__btn-del::after {
-    transform: rotate(-45deg);
-}
+    .item-list__btn-del::after {
+        transform: rotate(-45deg);
+    }
 
-.item-list__btn-del::before {
-    transform: rotate(45deg);
-}
+    .item-list__btn-del::before {
+        transform: rotate(45deg);
+    }
 
 .item-list__btn-ed {
     top: 35px;
@@ -344,4 +388,116 @@ body {
     height: 20px;
     bottom: 15px;
     right: 3px;
+}
+
+
+.save-btn {
+    margin-top: 15px;
+    font-family: "Comic Relief";
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #ffcf15;
+    text-shadow: 0 0 10px #333333;
+    background: #111;
+    border: 3px solid #333;
+    border-radius: 8px;
+    padding: 5px 8px;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 160px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 18px;
+    font-weight: 500;
+    color: #767676;
+    outline: none;
+    border: 5px solid var(--dark-grey);
+    background-color: #141414;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.validation-error {
+    color: #ff1717;
+    font-size: 20px;
+    text-transform:uppercase;
+    margin: 10px;
+    /*background: #333;*/
+    padding: 5px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: block;
+}
+
+.droppy {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.links__dropdown {
+   
+    margin: 0;
+    padding: 0;
+    background: #111;
+    border: 3px solid #333;
+    border-radius: 8px;
+    width: 200px;
+    font-size: 16px;
+    font-weight: 500;
+    position: relative;
+}
+
+   
+    .links__dropdown > li {
+        position: relative;
+    }
+
+       
+        .links__dropdown > li > a {
+            display: block;
+            padding: 10px 16px;
+            color: var(--accent-color, #ff6600);
+            text-decoration: none;
+        }
+
+  
+    .links__dropdown li ul {
+        display: none;
+        position: absolute;
+        top: 45px;
+        right: -2px;
+        background: #111;
+        border: 3px solid #333;
+        border-radius: 8px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 200px; 
+        z-index: 10;
+    }
+
+   
+    .links__dropdown li:hover > ul {
+        display: block;
+    }
+
+  
+    .links__dropdown li ul li a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--accent-color, #ff6600);
+        text-decoration: none;
+    }
+.links__dropdown li a:hover {
+    background: #333;
+}
+
+.form__sm {
+    flex: 0 1 auto;  /*for small forms */
 }
