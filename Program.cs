@@ -22,17 +22,26 @@ builder.Services
             .AddSystemTextJson()
             .ConfigureExecutionOptions(options => {
                 options.EnableMetrics = false;
-                // Включаємо детальні помилки для розробки
                 options.ThrowOnUnhandledException = false;
-
-
+            });
+    })
+    .AddCors(options =>
+    {
+        options.AddPolicy("AllowLocalhost5173",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
             });
     })
     .AddControllersWithViews();
+    
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -40,19 +49,19 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    // В режимі розробки показуємо детальні помилки
+  
     app.UseDeveloperExceptionPage();
 }
-
+app.UseCors("AllowLocalhost5173");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// GraphQL endpoint
+
 app.UseGraphQL<ISchema>("/graphql");
 
-// Додаємо GraphQL Playground ТІЛЬКИ для розробки
+
 if (app.Environment.IsDevelopment())
 {
     app.UseGraphQLPlayground("/graphql/playground");

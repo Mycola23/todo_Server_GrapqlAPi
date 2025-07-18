@@ -32,4 +32,8 @@
 		<id>8</id>
 		<type>Drop</type>
 	</category>
+	<category>
+		<id>9</id>
+		<type>??</type>
+	</category>
 </categories>

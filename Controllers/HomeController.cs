@@ -12,7 +12,6 @@ using System.ComponentModel;
 using ToDoProject.Storages;
 using Microsoft.Identity.Client.Extensions.Msal;
 namespace WebApplication1.Controllers;
-// переробити замість того щоб надсилати тип сховища  а як параметра надсилати його в headers
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -133,7 +132,7 @@ public class HomeController : Controller
                     TaskVm = data
                 };
                
-                return View("XMLView", modelWithData);
+                return View("~/Views/XML/Index.cshtml", modelWithData);
             }
 
             var newTask = storageHandler.CreateTask(container.Task);
