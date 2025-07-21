@@ -12,8 +12,10 @@ namespace ToDoProject.Storages
         public TaskResponse CreateTask(TaskModel task)
         {
             var response = new TaskResponse();
+            int genaretedId = 0;
             try
             {
+                
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     string query = "INSERT INTO Tasks (Text, CategoryId, PlannedTime) VALUES (@Text, @CategoryId, @PlannedTime)";
@@ -22,9 +24,22 @@ namespace ToDoProject.Storages
                     cmd.Parameters.AddWithValue("@CategoryId", task.CategoryId ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@PlannedTime", task.PlannedTime ?? (object)DBNull.Value);
                     conn.Open();
+                    
+
+                    using (SqlCommand cmdSecond = new SqlCommand("SELECT TOP 1 * FROM Tasks ORDER BY Id DESC", conn))
+                    using (SqlDataReader readerSecond = cmdSecond.ExecuteReader())
+                    {
+                        if (readerSecond.Read())
+                        {
+                            genaretedId = (int)readerSecond["Id"];
+                        }
+                    }
                     cmd.ExecuteNonQuery();
                 }
+
+                
                 response.Task = task;
+                response.Task.Id = genaretedId;
                 response.Message = "task created successfully";
 
 
